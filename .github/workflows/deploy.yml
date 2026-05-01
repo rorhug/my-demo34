@@ -28,23 +28,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Detect package manager
-        id: detect-package-manager
-        run: |
-          if [ -f "\${{ github.workspace }}/package-lock.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "Unable to determine package manager"
-            exit 1
-          fi
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: \${{ steps.detect-package-manager.outputs.manager }}
+          cache: npm
 
       - name: Setup Pages
         id: setup_pages
@@ -64,7 +52,7 @@ jobs:
             \${{ runner.os }}-nextjs-\${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install dependencies
-        run: \${{ steps.detect-package-manager.outputs.manager }} \${{ steps.detect-package-manager.outputs.command }}
+        run: npm ci
 
       - name: Build with Next.js (and deploy Convex)
         run: npx convex deploy --cmd 'npm run build' --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL
